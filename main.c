@@ -1,35 +1,54 @@
+/*========================================================================================================================================
+ TRABALHO PRATICO 2 - Sistemas Operacionais
+ @GUSTAVO HENRIQUE DOS REIS
+ gureis@dcc.ufmg.br
+
+ @PRISCILLA FERNANDA VASCONCELOS
+ prisvasconcelosdcc.ufmg.br
+
+ *MAIN.C - Arquivo principal do programa que implementa a sincronização de processos do problema do Forno (The Big Bang Theory).
+
+ ========================================================================================================================================*/
+
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include <pthread.h>
+
 #include "monitor.h"
 
 // SIMULAÇÕES DO PROGRAMA
-void execucao_aleatoria() {
 
-	//	// Sheldon
-	//	pthread_create(&(threads[0]), NULL, inicia_thread, &id_thread[0]);
-	//	sleep(1);
-	//
-	//	// Amy
-	//	pthread_create(&(threads[3]), NULL, inicia_thread, &id_thread[3]);
-	////	sleep(1);
-	//
-	//	// Howard
-	//	pthread_create(&(threads[1]), NULL, inicia_thread, &id_thread[1]);
-	//	//sleep(1);
-	//
-	//	// Bernadette
-	//	pthread_create(&(threads[4]), NULL, inicia_thread, &id_thread[4]);
-	//	sleep(1);
-	//
-	////	// Leonard
-	////	pthread_create(&(threads[2]), NULL, inicia_thread, &id_thread[2]);
-	////	sleep(1);
-	////
-	////	// Penny
-	////	pthread_create(&(threads[5]), NULL, inicia_thread, &id_thread[5]);
-	////	sleep(1);
+/*
+ * Inicializa as threads em uma ordem aleatória.
+ * Parametros:
+ *  * threads[] - cada uma das threads a ser iniciada.
+ *  *thread_args[] - estrutura de dados com argumentos para as threads.
+ */
+void execucao_aleatoria(pthread_t threads[], ThreadArg thread_args[]) {
+
+	int i = 0;
+	int personagem[] = { 0, 0, 0, 0, 0, 0 };
+	while (i < 6) {
+		srand(time(NULL ));
+		int n = rand() % 6;
+
+		if (personagem[n] == 0) {
+			pthread_create(&(threads[i]), NULL, inicia_casais, &thread_args[i]);
+			personagem[i]++;
+			i++;
+		}
+	}
 
 }
 
+/*
+ * Inicializa as threads em uma sequência ordenada.
+ * Parametros:
+ *  * threads[] - cada uma das threads a ser iniciada.
+ *  * thread_args[] - estrutura de dados com argumentos para as threads.
+ */
 void execucao_sequencial(pthread_t threads[], ThreadArg thread_args[]) {
 	int i;
 
@@ -71,6 +90,7 @@ int main(int argc, char **argv) {
 	execucao_sequencial(threads, thread_args);
 
 	/* EXECUÇÃO ALEATÓRIA */
+	execucao_aleatoria(threads, thread_args);
 
 	/* CRIA A THREAD DO RAJ SEPARADAMENTE */
 	sleep(1);
